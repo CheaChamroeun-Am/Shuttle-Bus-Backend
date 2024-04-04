@@ -1,0 +1,30 @@
+import { Application, NextFunction, Router } from "express";
+import batch from "./batch/index";
+import bus from "./bus/index";
+import schedule from "./schedule/index";
+import mainLocation from "./mainLocation/index";
+import subLocation from "./subLocation/index";
+import departure from "./departure";
+import user from "./user";
+import waiting from "./waiting";
+import booking from "./booking";
+import dashboard from "./dashboard";
+import cancel from "./cancel";
+import ticket from "./ticket";
+import { authMiddleware } from "../middleware/auth";
+
+export default (app: Application) => {
+  app.use("/batch", authMiddleware, batch());
+  app.use("/bus", authMiddleware, bus());
+  app.use("/schedule", authMiddleware, schedule());
+  app.use("/mainLocation", authMiddleware, mainLocation());
+  app.use("/subLocation", authMiddleware, subLocation());
+  app.use("/departure", authMiddleware, departure());
+  app.use("/user", user());
+  app.use("/waiting", authMiddleware, waiting());
+  app.use("/booking", authMiddleware, booking());
+  app.use("/dashboard", authMiddleware, dashboard());
+  app.use("/cancel", authMiddleware, cancel());
+  app.use("/ticket", authMiddleware, ticket());
+  return app;
+};

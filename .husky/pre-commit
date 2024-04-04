@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx pretty-quick --staged # ✅ replace the dummy "echo" command
+
+npx lint-staged # ✅ add lint-staged

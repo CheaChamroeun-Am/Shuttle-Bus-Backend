@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+if [ "$3" = "1" ]; then
+  # install npm packages
+  pnpm install
+
+  # or with yarn
+  # yarn install --frozen-lockfile
+fi

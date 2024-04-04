@@ -1,0 +1,255 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleEnum {
+  SUPERADMIN
+  ADMIN
+  STUDENT
+  STAFF
+  CUSTOMER
+  DRIVER
+}
+
+enum GenderEnum {
+  FEMALE
+  MALE
+}
+
+enum DepartmentEnum {
+  SOFTWAREENGINEERING
+  TOURISMANDMANAGEMENT
+  ARCHITECTURE
+}
+
+enum BookingStatusEnum {
+  BOOKED
+  USED
+}
+
+enum WaitingStatusEnum {
+  WAITING
+  USED
+}
+
+model Cost {
+  id            String    @id @default(uuid())
+  targetPeople  String    @unique
+  costPerPerson Float     @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+}
+
+model Batch {
+  id          String          @id @default(uuid())
+  department  DepartmentEnum?
+  batchNum    Int?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime?       @updatedAt
+  StudentInfo StudentInfo[]
+
+  @@unique([department, batchNum], name: "department_batchNum")
+}
+
+model CustomerInfo {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId String @unique
+}
+
+model StudentInfo {
+  id      String  @id @default(uuid())
+  user    User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId  String  @unique
+  batch   Batch?  @relation(fields: [batchId], references: [id])
+  batchId String?
+}
+
+model StaffInfo {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId String @unique
+}
+
+model AdminInfo {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId String @unique
+}
+
+model SuperAdminInfo {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId String @unique
+}
+
+model Ticket {
+  id                String    @id @default(uuid())
+  user              User      @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId            String    @unique
+  remainTicket      Int       @default(36)
+  ticketLimitInhand Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+}
+
+model DriverInfo {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId String @unique
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String?         @unique
+  username       String?
+  password       String?
+  googlePassword String?
+  role           RoleEnum
+  phone          String?
+  gender         GenderEnum?
+  inKRR          Boolean?        @default(true)
+  enable         Boolean         @default(true)
+  booking        Booking[]
+  ticket         Ticket?
+  cancel         Cancel[]
+  waitting       Waitting[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime?       @updatedAt
+  studentInfo    StudentInfo?
+  staffInfo      StaffInfo?
+  adminInfo      AdminInfo?
+  superAdminInfo SuperAdminInfo?
+  CustomerInfo   CustomerInfo?
+  DriverInfo     DriverInfo?
+}
+
+model Bus {
+  id            String     @id @default(uuid())
+  model         String
+  plateNumber   String     @unique
+  numOfSeat     Int
+  driverName    String
+  driverContact String
+  enable        Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime?  @updatedAt
+  Schedule      Schedule[]
+
+  @@unique([model, plateNumber, driverName, driverContact, numOfSeat], name: "model_plateNumber_driverName_driverContact_numOfSeat")
+}
+
+model Booking {
+  id         String            @id @default(uuid())
+  user       User              @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId     String
+  schedule   Schedule          @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  payStatus  Boolean           @default(false)
+  status     BookingStatusEnum @default(BOOKED)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime?         @updatedAt
+
+  @@unique([userId, scheduleId], name: "userId_scheduleId")
+}
+
+model ManualBooking {
+  id            String    @id @default(uuid())
+  name          String
+  phone         String?
+  numberBooking Int
+  adult         Int
+  child         Int
+  totalCost     Float
+  remark        String?
+  schedule      Schedule  @relation(fields: [scheduleId], references: [id])
+  scheduleId    String
+  payment       String
+  status        String
+  user_type     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+}
+
+model Schedule {
+  id            String          @id @default(uuid())
+  departureId   String
+  date          DateTime        @db.Date
+  availableSeat Int?            @default(24)
+  busId         String?
+  enable        Boolean         @default(true)
+  departure     Departure       @relation(fields: [departureId], references: [id])
+  bus           Bus?            @relation(fields: [busId], references: [id], onDelete: SetNull)
+  booking       Booking[]
+  Cancel        Cancel[]
+  Waitting      Waitting[]
+  ManualBooking ManualBooking[]
+
+  @@unique([departureId, date, busId], name: "departureId_date_bus")
+}
+
+model Cancel {
+  id         String   @id @default(uuid())
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  scheduleId String
+  userId     String
+}
+
+model Waitting {
+  id         String            @id @default(uuid())
+  userId     String
+  schedule   Schedule          @relation(fields: [scheduleId], references: [id])
+  user       User              @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  scheduleId String
+  payStatus  Boolean           @default(false)
+  status     WaitingStatusEnum @default(WAITING)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime?         @updatedAt
+
+  @@unique([userId, scheduleId], name: "userId_scheduleId")
+}
+
+model Departure {
+  id               String       @id @default(uuid())
+  from             MainLocation @relation(name: "FromLocation", fields: [fromId], references: [id])
+  destination      MainLocation @relation(name: "DestinationLocation", fields: [destinationId], references: [id])
+  pickupLocation   SubLocation  @relation(name: "PickupLocation", fields: [pickupLocationId], references: [id])
+  dropLocation     SubLocation  @relation(name: "DropLocation", fields: [dropLocationId], references: [id])
+  fromId           String
+  destinationId    String
+  departureTime    DateTime     @db.Time(0)
+  pickupLocationId String
+  dropLocationId   String
+  Schedule         Schedule[]
+
+  @@unique([fromId, destinationId, departureTime], name: "fromId_destinationId_departureTime")
+}
+
+model MainLocation {
+  id                  String        @id @default(uuid())
+  mainLocationName    String        @unique
+  SubLocation         SubLocation[]
+  fromLocation        Departure[]   @relation("FromLocation")
+  destinationLocation Departure[]   @relation("DestinationLocation")
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime?     @updatedAt
+}
+
+model SubLocation {
+  id              String       @id @default(uuid())
+  subLocationName String       @unique
+  mainLocation    MainLocation @relation(fields: [mainLocationId], references: [id])
+  mainLocationId  String
+  pickupLocation  Departure[]  @relation("PickupLocation")
+  dropLocation    Departure[]  @relation("DropLocation")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime?    @updatedAt
+
+  @@unique([mainLocationId, subLocationName], name: "mainLocationId_subLocationName")
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #e7f0ea;
+      padding: 20px;
+      /* overflow: hidden; */
+    }
+
+    .center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #d8e6de;
+      padding: 1em 5em 1em 5em;
+      text-align: center;
+    }
+
+    .textColor {
+      color: #052311;
+    }
+
+    .primaryColor {
+      color: #0e6431;
+    }
+
+    .headline {
+      font-size: 1.5em;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .importantText {
+      font-weight: 700;
+      color: #0e6431;
+    }
+
+    .svgImage {
+      width: 80%;
+      height: auto;
+      align-self: center;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .textSize {
+      font-size: 0.875em;
+      color: #808080;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="center">
+    <img src="/static/asset/server_down.svg" class="svgImage"  />
+    <h1 class="headline importantText">
+      We're sorry, our server is currently unavailable.
+    </h1>
+    <p class="textSize">
+      We are working hard to fix the issue and get back in no time.
+    </p>
+    <p class="textSize">Please try again in a few moment</p>
+  </div>
+</body>
+
+</html>
